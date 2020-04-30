@@ -1,0 +1,10 @@
+[package]
+name = "cone"
+version = "0.1.0"
+authors = ["RomanAkberov <r.k.akberov@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+glutin = "0.24"
+gl = "0.14"
+png = "0.16"
