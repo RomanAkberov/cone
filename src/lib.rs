@@ -33,8 +33,8 @@ impl Update {
 }
 
 pub struct Frame {
-    width: u32,
-    height: u32,
+    width: i32,
+    height: i32,
     mesh: Mesh,
 }
 
@@ -45,7 +45,7 @@ impl Frame {
         }
     }
 
-    pub fn put_char(&mut self, x: u32, y: u32, ch: char, color: Color) {
+    pub fn put_char(&mut self, x: i32, y: i32, ch: char, color: Color) {
         if x >= self.width || y >= self.height {
             return;
         }
@@ -62,17 +62,17 @@ impl Frame {
         }
     }
 
-    pub fn put_str(&mut self, x: u32, y: u32, str: &str, color: Color) {
+    pub fn put_str(&mut self, x: i32, y: i32, str: &str, color: Color) {
         for (i, ch) in str.chars().enumerate() {
-            self.put_char(x + (i as u32), y, ch, color);
+            self.put_char(x + (i as i32), y, ch, color);
         }
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn width(&self) -> i32 {
         self.width
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> i32 {
         self.height
     }
 }
@@ -182,7 +182,9 @@ fn char_to_uvs(ch: char) -> [[f32; 2]; 4] {
     ]
 }
 
-fn create_frame(width: u32, height: u32) -> Frame {
+fn create_frame(width: i32, height: i32) -> Frame {
+    assert!(width > 0);
+    assert!(height > 0);
     let mut vertices = Vec::new();
     let mut indices = Vec::new();
     let x_step = 2.0 / (width as f32);
@@ -321,8 +323,8 @@ fn draw_mesh(mesh: &Mesh, program: GLuint) {
 
 pub struct Config<'a> {
     pub title: &'a str,
-    pub width: u32,
-    pub height: u32, 
+    pub width: i32,
+    pub height: i32, 
     pub font: &'a [u8],
 }
 
@@ -331,7 +333,10 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
     let event_loop = glutin::event_loop::EventLoop::new();
     let window_builder = glutin::window::WindowBuilder::new()
         .with_title(config.title)
-        .with_inner_size(glutin::dpi::PhysicalSize::new(config.width * font.width / FONT_COLUMNS, config.height * font.height / FONT_ROWS))
+        .with_inner_size(glutin::dpi::PhysicalSize::new(
+            config.width as u32 * font.width / FONT_COLUMNS, 
+            config.height as u32 * font.height / FONT_ROWS,
+        ))
         .with_resizable(false);
     let context = glutin::ContextBuilder::new()
         .with_vsync(true)
