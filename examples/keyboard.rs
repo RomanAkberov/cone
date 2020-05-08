@@ -5,7 +5,7 @@ struct Keyboard {
 impl cone::App for Keyboard {
     fn draw(&self, frame: &mut cone::Frame) {
         frame.clear();
-        frame.put_str(0, 0, &self.text, cone::WHITE)
+        frame.put_str(0, 0, &self.text, cone::Color::WHITE)
     }
 
     fn update(&mut self, update: &cone::Update) {

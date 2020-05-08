@@ -45,7 +45,7 @@ impl Frame {
         }
     }
 
-    pub fn put_char(&mut self, x: u32, y: u32, ch: char, color: [f32; 4]) {
+    pub fn put_char(&mut self, x: u32, y: u32, ch: char, color: Color) {
         if x >= self.width || y >= self.height {
             return;
         }
@@ -53,11 +53,16 @@ impl Frame {
         let uvs = char_to_uvs(ch);
         for (vertex, &uv) in self.mesh.vertices[index .. index + 4].iter_mut().zip(&uvs) {
             vertex.uv = uv;
-            vertex.color = color; 
+            vertex.color = [
+                color.r as f32 / 255.0, 
+                color.g as f32 / 255.0,
+                color.b as f32 / 255.0,
+                color.a as f32 / 255.0,
+            ]; 
         }
     }
 
-    pub fn put_str(&mut self, x: u32, y: u32, str: &str, color: [f32; 4]) {
+    pub fn put_str(&mut self, x: u32, y: u32, str: &str, color: Color) {
         for (i, ch) in str.chars().enumerate() {
             self.put_char(x + (i as u32), y, ch, color);
         }
@@ -69,6 +74,27 @@ impl Frame {
 
     pub fn height(&self) -> u32 {
         self.height
+    }
+}
+
+#[derive(Copy, Clone, PartialEq, Debug, Default)]
+pub struct Color {
+    pub r: u8,
+    pub g: u8,
+    pub b: u8,
+    pub a: u8,
+}
+
+impl Color {
+    pub const WHITE: Self = Color::rgb(255, 255, 255);
+    pub const BLACK: Self = Color::rgb(0, 0, 0);
+
+    pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
+        Self { r, g, b, a }
+    }
+
+    pub const fn rgb(r: u8, g: u8, b: u8) -> Self {
+        Self { r, g, b, a: 255 }
     }
 }
 
@@ -104,9 +130,6 @@ fn create_font_texture(font: &Font) -> GLuint {
     texture
 }
 
-pub const WHITE: [f32; 4] = [1.0, 1.0, 1.0, 1.0];
-pub const BLACK: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
-
 macro_rules! offset_of {
     ($ty: ty, $field: ident) => {
         {
@@ -118,13 +141,13 @@ macro_rules! offset_of {
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Default)]
-pub struct Vertex {
+struct Vertex {
     pub position: [f32; 2],
     pub uv: [f32; 2],
     pub color: [f32; 4],
 }
 
-pub type Index = u32;
+type Index = u32;
 
 #[derive(Debug)]
 struct Mesh {

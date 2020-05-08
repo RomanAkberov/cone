@@ -4,7 +4,7 @@ impl cone::App for HelloWorld {
     fn draw(&self, frame: &mut cone::Frame) {
         let text = "Hello world!";
         frame.clear();
-        frame.put_str((frame.width() - text.len() as u32) / 2, frame.height() / 2, text, cone::WHITE)
+        frame.put_str((frame.width() - text.len() as u32) / 2, frame.height() / 2, text, cone::Color::WHITE)
     }
 
     fn update(&mut self, _: &cone::Update) {}
