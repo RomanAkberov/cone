@@ -3,6 +3,9 @@ name = "cone"
 version = "0.1.0"
 authors = ["RomanAkberov <r.k.akberov@gmail.com>"]
 edition = "2018"
+description = "Simple OpenGL console."
+license = "GPL-3.0-or-later"
+repository = "https://github.com/RomanAkberov/cone"
 
 [dependencies]
 glutin = "0.24"
