@@ -12,7 +12,7 @@ fn main() -> cone::Result<()> {
         title: "Empty",
         width: 80,
         height: 50,
-        font_path: "examples/Alloy_curses_12x12.png",
+        font: include_bytes!("Alloy_curses_12x12.png"),
     },
     app)
 }

@@ -53,8 +53,8 @@ struct Font {
     height: u32,
 }
 
-fn load_font(path: &str) -> Result<Font> {
-    let decoder = png::Decoder::new(std::fs::File::open(path)?);
+fn load_font(bytes: &[u8]) -> Result<Font> {
+    let decoder = png::Decoder::new(bytes);
     let (info, mut reader) = decoder.read_info()?;
     let mut bytes = vec![0; info.buffer_size()];
     reader.next_frame(&mut bytes)?;
@@ -275,11 +275,11 @@ pub struct Config<'a> {
     pub title: &'a str,
     pub width: u32,
     pub height: u32, 
-    pub font_path: &'a str,
+    pub font: &'a [u8],
 }
 
 pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
-    let font = load_font(config.font_path)?;
+    let font = load_font(config.font)?;
     let event_loop = glutin::event_loop::EventLoop::new();
     let window_builder = glutin::window::WindowBuilder::new()
         .with_title(config.title)
