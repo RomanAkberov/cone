@@ -1,10 +1,35 @@
+use std::collections::HashSet;
 use gl::types::*;
+pub use glutin::event::VirtualKeyCode as KeyCode;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 pub trait App {
     fn draw(&self, frame: &mut Frame);
-    fn update(&mut self);
+    fn update(&mut self, update: &Update);
+}
+
+#[derive(Default)]
+pub struct Update {
+    pressed: HashSet<KeyCode>,
+}
+
+impl Update {
+    pub fn is_pressed(&self, key: KeyCode) -> bool {
+        self.pressed.contains(&key)
+    }
+
+    fn press(&mut self, key: KeyCode) {
+        self.pressed.insert(key);
+    }
+
+    fn release(&mut self, key: KeyCode) {
+        self.pressed.remove(&key);
+    }
+
+    fn clear(&mut self) {
+        self.pressed.clear();
+    }
 }
 
 pub struct Frame {
@@ -297,6 +322,7 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
     let program = create_program(vertex_shader, fragment_shader)?;
     create_font_texture(&font);
     let mut frame = create_frame(config.width, config.height);
+    let mut update = Update::default();
     event_loop.run(move |event, _, control_flow| {
         *control_flow = glutin::event_loop::ControlFlow::Poll;
         match event {
@@ -309,10 +335,28 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
                         gl::Viewport(0, 0, physical_size.width as GLsizei, physical_size.height as GLsizei);
                     }
                 }
+                glutin::event::WindowEvent::KeyboardInput {
+                    input: glutin::event::KeyboardInput {
+                        state,
+                        virtual_keycode: Some(key),
+                        ..
+                    },
+                    ..
+                } => {
+                    match state {
+                        glutin::event::ElementState::Pressed => {
+                            update.press(key);
+                        }
+                        glutin::event::ElementState::Released => {
+                            update.release(key);
+                        }
+                    }
+                },
                 _ => ()
             }
             glutin::event::Event::MainEventsCleared => {
-                app.update();
+                app.update(&update);
+                update.clear();
                 context.window().request_redraw();
             }
             glutin::event::Event::RedrawRequested(_) => {

@@ -3,7 +3,7 @@ struct Empty;
 impl cone::App for Empty {
     fn draw(&self, _: &mut cone::Frame) {}
 
-    fn update(&mut self) {}
+    fn update(&mut self, _: &cone::Update) {}
 }
 
 fn main() -> cone::Result<()> {

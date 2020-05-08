@@ -7,7 +7,7 @@ impl cone::App for HelloWorld {
         frame.put_str((frame.width() - text.len() as u32) / 2, frame.height() / 2, text, cone::WHITE)
     }
 
-    fn update(&mut self) {}
+    fn update(&mut self, _: &cone::Update) {}
 }
 
 fn main() -> cone::Result<()> {
