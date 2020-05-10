@@ -1,6 +1,6 @@
 [package]
 name = "cone"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["RomanAkberov <r.k.akberov@gmail.com>"]
 edition = "2018"
 description = "Simple OpenGL console."

@@ -11,12 +11,17 @@ pub trait App {
 
 #[derive(Default)]
 pub struct Update {
+    mouse_pos: (i32, i32),
     pressed: HashSet<KeyCode>,
 }
 
 impl Update {
     pub fn is_pressed(&self, key: KeyCode) -> bool {
         self.pressed.contains(&key)
+    }
+
+    pub fn mouse_pos(&self) -> (i32, i32) {
+        self.mouse_pos
     }
 
     fn press(&mut self, key: KeyCode) {
@@ -344,6 +349,8 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
     let context = unsafe {
         context.make_current().map_err(|(_, err)| err)?
     };
+    let glyph_width = (font.width / FONT_COLUMNS) as i32;
+    let glyph_height = (font.height / FONT_ROWS) as i32;
     gl::load_with(|symbol| context.get_proc_address(symbol) as *const _);
     let vertex_shader = create_shader(gl::VERTEX_SHADER, include_bytes!("../shaders/cone.vert"))?;
     let fragment_shader = create_shader(gl::FRAGMENT_SHADER, include_bytes!("../shaders/cone.frag"))?;
@@ -363,6 +370,12 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
                         gl::Viewport(0, 0, physical_size.width as GLsizei, physical_size.height as GLsizei);
                     }
                 }
+                glutin::event::WindowEvent::CursorMoved {
+                    position,
+                    .. 
+                } => {
+                    update.mouse_pos = (position.x as i32 / glyph_width, position.y as i32 / glyph_height);
+                }
                 glutin::event::WindowEvent::KeyboardInput {
                     input: glutin::event::KeyboardInput {
                         state,
@@ -379,7 +392,7 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
                             update.release(key);
                         }
                     }
-                },
+                }
                 _ => ()
             }
             glutin::event::Event::MainEventsCleared => {
