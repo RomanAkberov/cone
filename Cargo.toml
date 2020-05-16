@@ -1,6 +1,6 @@
 [package]
 name = "cone"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["RomanAkberov <r.k.akberov@gmail.com>"]
 edition = "2018"
 description = "Simple OpenGL console."
@@ -11,3 +11,8 @@ repository = "https://github.com/RomanAkberov/cone"
 glutin = "0.24"
 gl = "0.14"
 png = "0.16"
+serde = {version = "1.0", features = ["derive"], optional = true}
+
+[features]
+default = []
+serde1 = ["serde"]

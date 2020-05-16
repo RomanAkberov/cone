@@ -84,6 +84,7 @@ impl Frame {
 }
 
 #[derive(Copy, Clone, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "serde1", derive(serde::Serialize, serde::Deserialize))]
 pub struct Color {
     pub r: u8,
     pub g: u8,
