@@ -7,6 +7,7 @@ pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 pub trait App {
     fn draw(&self, frame: &mut Frame);
     fn update(&mut self, update: &Update);
+    fn quit(&mut self) {}
 }
 
 #[derive(Default)]
@@ -363,6 +364,7 @@ pub fn run<A: App + 'static>(config: Config, mut app: A) -> Result<()> {
         match event {
             glutin::event::Event::WindowEvent { event, .. } => match event {
                 glutin::event::WindowEvent::CloseRequested => {
+                    app.quit();
                     *control_flow = glutin::event_loop::ControlFlow::Exit;
                 }
                 glutin::event::WindowEvent::Resized(physical_size) => {
